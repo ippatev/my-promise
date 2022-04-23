@@ -49,18 +49,64 @@ class MyPromise {
   }
 
   then(onFulfilled, onRejected) {
-    if(this.state === PENDING) {
-      if(onFulfilled) {
-        this.onFulfilledFn.push(this.onFulfilled)
-      } else if(onRejected) {
-        this.onRejectedFn.push(this.onRejected)
+    return new MyPromise((res, rej) => {
+      if(this.state === PENDING) {
+        if(onFulfilled) {
+          this.onFulfilledFn.push(() => {
+            try {
+              const newResult = onFulfilled(this.result)
+
+              if(newResult instanceof MyPromise) {
+                newResult.then(resolve, reject)
+              } else {
+                res(newResult)
+              }
+            } catch(err) {
+              rej(err)
+            }
+          })
+        } else if(onRejected) {
+          this.onRejectedFn.push(() => {
+            try {
+              const newResult = onRejected(this.result)
+
+              if(newResult instanceof MyPromise) {
+                newResult.then(resolve, reject)
+              } else {
+                rej(newResult)
+              }
+            } catch(err) {
+              rej(err)
+            }
+          })
+        }
       }
-    }
-    else if(onFulfilled && this.state === FULFILLED) {
-      onFulfilled(this.result)
-    } else if(onRejected && this.state === REJECTED) {
-      onRejected(this.result)
-    }
+      else if(onFulfilled && this.state === FULFILLED) {
+          try {
+            const newResult = onFulfilled(this.result)
+
+            if(newResult instanceof MyPromise) {
+              newResult.then(resolve, reject)
+            } else {
+              res(newResult)
+            }
+          } catch(err) {
+            rej(err)
+          }
+      } else if(onRejected && this.state === REJECTED) {
+        try {
+          const newResult = onRejected(this.result)
+
+          if(newResult instanceof MyPromise) {
+            newResult.then(resolve, reject)
+          } else {
+            rej(newResult)
+          }
+        } catch(err) {
+          rej(err)
+        }
+      }
+    })
   }
 
   catch(onRejected) {
@@ -100,6 +146,5 @@ setTimeout(() => {
  */
 myPromise.then(val => console.log(val))
 myPromise.then(val => console.log(val))
-myPromise.then(val => console.log(val))
-myPromise.then(val => console.log(val))
+myPromise.then(val => val).then(val2 => console.log(val2))
 

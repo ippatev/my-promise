@@ -72,17 +72,34 @@ class MyPromise {
 
 const nativePromise = new Promise((res, rej) => {
   setTimeout(() => {
-    res('hello')
+    res('shalom')
   }, 100)
 })
 
 const myPromise = new MyPromise((res, rej) => {
+/*
+ * the testing on the setTimeout api
+ *
   setTimeout(() => {
-    res('hello')
+    res('shalom')
   }, 100)
+  */
+
+  res('shalom')
 })
 
+/*
+ * the testing on the setTimeout api
 setTimeout(() => {
   console.log('myPromise result: ', myPromise)
 }, 200)
+*/
+
+/*
+ * the testing on the few then() calls
+ */
+myPromise.then(val => console.log(val))
+myPromise.then(val => console.log(val))
+myPromise.then(val => console.log(val))
+myPromise.then(val => console.log(val))
 

@@ -63,7 +63,9 @@ class MyPromise {
     }
   }
 
-  catch() {}
+  catch(onRejected) {
+    return this.then(null, onRejected)
+  }
 
   finally() {}
 }
